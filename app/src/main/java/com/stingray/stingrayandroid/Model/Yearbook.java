@@ -16,10 +16,10 @@ public class Yearbook extends Model {
     private School school;
     @SerializedName("cover_url")
     @Expose
-    private String coverUrl;
+    private String cover_url;
     @SerializedName("epub_url")
     @Expose
-    private String epubUrl;
+    private String epub_url;
     @SerializedName("price")
     @Expose
     private Integer price;
@@ -69,7 +69,7 @@ public class Yearbook extends Model {
      * The coverUrl
      */
     public String getCoverUrl() {
-        return coverUrl;
+        return cover_url;
     }
 
     /**
@@ -78,7 +78,7 @@ public class Yearbook extends Model {
      * The cover_url
      */
     public void setCoverUrl(String coverUrl) {
-        this.coverUrl = coverUrl;
+        this.cover_url = coverUrl;
     }
 
     /**
@@ -87,7 +87,7 @@ public class Yearbook extends Model {
      * The epubUrl
      */
     public String getEpubUrl() {
-        return epubUrl;
+        return epub_url;
     }
 
     /**
@@ -96,7 +96,7 @@ public class Yearbook extends Model {
      * The epub_url
      */
     public void setEpubUrl(String epubUrl) {
-        this.epubUrl = epubUrl;
+        this.epub_url = epubUrl;
     }
 
     /**

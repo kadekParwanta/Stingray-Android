@@ -26,13 +26,6 @@ public class HomeFragment extends Fragment {
     CarouselView carouselView;
     int[] sampleImages = {R.drawable.slide1, R.drawable.slide2};
     Button yearbookBtn;
-    ArrayList<Yearbook> yearbooks = new ArrayList<>();
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        loadYearbooks();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,25 +52,4 @@ public class HomeFragment extends Fragment {
             imageView.setImageResource(sampleImages[position]);
         }
     };
-
-    private void loadYearbooks() {
-        StingrayApplication application = (StingrayApplication) getActivity().getApplication();
-        RestAdapter restAdapter = application.getLoopBackAdapter();
-        YearbookRepository yearbookRepository = restAdapter.createRepository(YearbookRepository.class);
-        yearbookRepository.findAll(new ListCallback<Yearbook>() {
-            @Override
-            public void onSuccess(List<Yearbook> objects) {
-                yearbooks.clear();
-                yearbooks.addAll(objects);
-                for (Yearbook yearbook:yearbooks) {
-                    Log.d("Yearbooks","book year = " + yearbook.getYear());
-                }
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                Log.e("Yearbooks","error = " + t.getLocalizedMessage());
-            }
-        });
-    }
 }
