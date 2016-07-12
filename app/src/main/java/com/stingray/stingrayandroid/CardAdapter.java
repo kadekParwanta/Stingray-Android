@@ -67,16 +67,12 @@ public class CardAdapter extends  RecyclerView.Adapter<CardAdapter
 
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
-        holder.label.setText(mDataset.get(position).getSchool().getName());
-        holder.displayName.setText(""+mDataset.get(position).getYear());
-        holder.content.setText("Rp. "+mDataset.get(position).getPrice());
-
-        if (holder.image != null) {
-            imageLoader.DisplayImage("https://stingray-id.herokuapp.com"+mDataset.get(position).getCoverUrl(), holder.image);
-        }
+        holder.displayName.setText(mDataset.get(position).getSchool().getName());
+        holder.dateTime.setText(""+mDataset.get(position).getYear());
+        holder.label.setText("Rp. "+mDataset.get(position).getPrice());
 
         if (holder.avatar != null) {
-            imageLoader.DisplayImage("http://gravatar.com/avatar/?s=400", holder.avatar);
+            imageLoader.DisplayImage("https://stingray-id.herokuapp.com"+mDataset.get(position).getCoverUrl(), holder.avatar);
         }
     }
 

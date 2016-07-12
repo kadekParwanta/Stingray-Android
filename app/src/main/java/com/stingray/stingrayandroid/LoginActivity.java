@@ -3,23 +3,21 @@ package com.stingray.stingrayandroid;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,11 +30,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.stingray.stingrayandroid.Model.AccessToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,7 +88,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mSharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME,
                 MODE_PRIVATE);
-
+        String userObj = mSharedPreferences.getString(Constants.USERREG,"");
+        if (!userObj.isEmpty()) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -415,7 +415,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private JsonObject postNewParking(String id, String accestoken) {
             try {
                 URL url = new URL("https://stingray-id.herokuapp.com/api/Users/"+id+"?access_token="+accestoken);
-                Log.d("Login","url = "+ url.toString());
+                Log.d("Login", "url = " + url.toString());
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);

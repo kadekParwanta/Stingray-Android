@@ -74,7 +74,7 @@
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:paddingTop="@dimen/feed_item_status_pad_top"
             android:textColor="@color/black"
-            android:text="This is an example of the content with maximum 4 lines"/>
+            android:text="Deskripsi dari yearbook akan ditampilkan di sini"/>
 
         <ImageView
             android:id="@+id/image"
@@ -83,6 +83,7 @@
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingTop="@dimen/feed_item_status_pad_top"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
+            android:visibility="gone"
             android:scaleType="fitXY"/>
 
 
