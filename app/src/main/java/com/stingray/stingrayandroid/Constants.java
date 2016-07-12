@@ -13,4 +13,5 @@ public class Constants {
     public static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".sharedpref";
     public static final String USERREG = PACKAGE_NAME + ".USER";
     public static final String ACCESSTOKEN = PACKAGE_NAME + ".ACCESSTOKEN";
+    public static final String SDCARD_DIR = "Stingray";
 }

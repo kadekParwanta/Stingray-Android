@@ -1,8 +1,5 @@
 package com.stingray.stingrayandroid;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.stingray.stingrayandroid.Model.School;
 import com.stingray.stingrayandroid.Model.Yearbook;
@@ -19,13 +15,9 @@ import com.stingray.stingrayandroid.Model.YearbookRepository;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ListCallback;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Kadek_P on 7/12/2016.
@@ -52,7 +44,7 @@ public class YearbookFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new CardAdapter(yearbooks);
+        mAdapter = new CardAdapter(yearbooks, getActivity());
         mRecyclerView.setAdapter(mAdapter);
     }
 

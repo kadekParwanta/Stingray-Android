@@ -1,5 +1,6 @@
 package com.stingray.stingrayandroid;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.stingray.stingrayandroid.Helper.ImageLoader;
 import com.stingray.stingrayandroid.Model.Yearbook;
 
 import java.io.InputStream;
@@ -28,6 +30,9 @@ import java.util.List;
 public class CardAdapter extends  RecyclerView.Adapter<CardAdapter
         .PostViewHolder> {
     private final ArrayList<Yearbook> mDataset;
+    private final Activity mActivity;
+    private ImageLoader imageLoader;
+
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView displayName, dateTime, label, content;
@@ -45,8 +50,9 @@ public class CardAdapter extends  RecyclerView.Adapter<CardAdapter
         }
     }
 
-    public CardAdapter(ArrayList<Yearbook> myDataset) {
+    public CardAdapter(ArrayList<Yearbook> myDataset, Activity activity) {
         mDataset = myDataset;
+        mActivity = activity;
     }
 
     @Override
@@ -55,6 +61,7 @@ public class CardAdapter extends  RecyclerView.Adapter<CardAdapter
                 .inflate(R.layout.cardviewpost, parent, false);
 
         PostViewHolder dataObjectHolder = new PostViewHolder(view);
+        imageLoader = new ImageLoader(mActivity);
         return dataObjectHolder;
     }
 
@@ -65,52 +72,16 @@ public class CardAdapter extends  RecyclerView.Adapter<CardAdapter
         holder.content.setText("Rp. "+mDataset.get(position).getPrice());
 
         if (holder.image != null) {
-            new DownLoadImageTask(holder.image).execute("https://stingray-id.herokuapp.com"+mDataset.get(position).getCoverUrl());
+            imageLoader.DisplayImage("https://stingray-id.herokuapp.com"+mDataset.get(position).getCoverUrl(), holder.image);
         }
 
         if (holder.avatar != null) {
-            new DownLoadImageTask(holder.avatar).execute("http://gravatar.com/avatar/?s=400");
+            imageLoader.DisplayImage("http://gravatar.com/avatar/?s=400", holder.avatar);
         }
     }
 
     @Override
     public int getItemCount() {
         return mDataset.size();
-    }
-
-    private class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
-        ImageView imageView;
-
-        public DownLoadImageTask(ImageView imageView){
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String...urls){
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try{
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            }catch(Exception e){ // Catch the download exception
-                e.printStackTrace();
-            }
-            return logo;
-        }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result){
-            imageView.setImageBitmap(result);
-        }
     }
 }
