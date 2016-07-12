@@ -73,6 +73,7 @@
             android:paddingLeft="@dimen/feed_item_status_pad_left_right"
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:paddingTop="@dimen/feed_item_status_pad_top"
+            android:paddingBottom="10dp"
             android:textColor="@color/black"
             android:text="Deskripsi dari yearbook akan ditampilkan di sini"/>
 
@@ -85,6 +86,21 @@
             android:paddingRight="@dimen/feed_item_status_pad_left_right"
             android:visibility="gone"
             android:scaleType="fitXY"/>
+
+        <Button
+            android:id="@+id/download_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/feed_item_status_pad_left_right"
+            android:paddingRight="@dimen/feed_item_status_pad_left_right"
+            android:text="Download"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/buttonshape"
+            android:shadowColor="#37A85D"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            />
 
 
     </LinearLayout>
