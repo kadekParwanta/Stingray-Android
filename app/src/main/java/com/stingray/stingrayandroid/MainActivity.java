@@ -1,12 +1,12 @@
 package com.stingray.stingrayandroid;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,16 +14,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.synnapps.carouselview.CarouselView;
-import com.synnapps.carouselview.ImageListener;
+import com.google.gson.Gson;
+import com.stingray.stingrayandroid.Model.AccessToken;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
+    private ImageView imageView;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +53,16 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mSharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME,
+                MODE_PRIVATE);
+
+        View header = navigationView.getHeaderView(0);
+        TextView userName = (TextView) header.findViewById(R.id.userName);
+
+        TextView email = (TextView) header.findViewById(R.id.email);
+
+        imageView = (ImageView) header.findViewById(R.id.thumbnailImage);
     }
 
     @Override
@@ -90,18 +103,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            changeFragment(new YearbookFragment());
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_home) {
             changeFragment(new HomeFragment());
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_yearbook) {
+            changeFragment(new YearbookFragment());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

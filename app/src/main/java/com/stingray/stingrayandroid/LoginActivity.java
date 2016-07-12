@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -20,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,8 +32,24 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.stingray.stingrayandroid.Model.AccessToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -62,6 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +89,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
+        mSharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME,
+                MODE_PRIVATE);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -162,18 +184,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-//            mPasswordView.setError(getString(R.string.error_invalid_password));
+            mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
-//            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-//            mEmailView.setError(getString(R.string.error_invalid_email));
+            mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
         }
@@ -297,35 +315,65 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mUsername;
         private final String mPassword;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        UserLoginTask(String username, String password) {
+            mUsername = username;
             mPassword = password;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            try {
+                URL url = new URL("https://stingray-id.herokuapp.com/api/Users/login");
+                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.connect();
+
+                // Send POST output.
+                String bodyRequest = setupBodyRequest(mUsername, mPassword);
+                DataOutputStream printout = new DataOutputStream(conn.getOutputStream());
+                printout.writeBytes(bodyRequest);
+                printout.flush();
+                printout.close();
+
+                int HttpResult = conn.getResponseCode();
+                if(HttpResult == HttpURLConnection.HTTP_OK){
+                    JsonParser jp = new JsonParser();
+                    JsonElement root = jp.parse(new InputStreamReader((InputStream) conn.getContent()));
+                    JsonObject rootobj = root.getAsJsonObject();
+                    SharedPreferences.Editor prefsEditor = mSharedPreferences.edit();
+                    prefsEditor.putString(Constants.ACCESSTOKEN, rootobj.toString());
+                    prefsEditor.commit();
+                    return true;
+
+                }else{
+                    Log.e("MapDemo", "error 1" + conn.getResponseMessage());
+                }
+            } catch (Exception e) {
+                Log.e("MapDemo", "error 2" + e.getLocalizedMessage());
+            }
+            return false;
+        }
+
+        private String setupBodyRequest(String username, String password) {
+            JSONObject jsonParam = new JSONObject();
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                jsonParam.put("username", username);
+                jsonParam.put("password", password);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
+            return jsonParam.toString();
         }
 
         @Override
