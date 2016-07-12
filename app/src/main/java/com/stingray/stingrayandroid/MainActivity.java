@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.stingray.stingrayandroid.Model.AccessToken;
+import com.stingray.stingrayandroid.Model.User;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -56,11 +57,14 @@ public class MainActivity extends AppCompatActivity
 
         mSharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME,
                 MODE_PRIVATE);
-
+        Gson gson = new Gson();
+        String userObj = mSharedPreferences.getString(Constants.USERREG,"");
+        User user = gson.fromJson(userObj,User.class);
         View header = navigationView.getHeaderView(0);
         TextView userName = (TextView) header.findViewById(R.id.userName);
-
+        userName.setText(user.getUsername());
         TextView email = (TextView) header.findViewById(R.id.email);
+        email.setText(user.getEmail());
 
         imageView = (ImageView) header.findViewById(R.id.thumbnailImage);
     }

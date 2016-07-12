@@ -313,7 +313,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, JsonObject> {
 
         private final String mUsername;
         private final String mPassword;
@@ -324,7 +324,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected JsonObject doInBackground(Void... params) {
             try {
                 URL url = new URL("https://stingray-id.herokuapp.com/api/Users/login");
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
@@ -349,10 +349,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     JsonParser jp = new JsonParser();
                     JsonElement root = jp.parse(new InputStreamReader((InputStream) conn.getContent()));
                     JsonObject rootobj = root.getAsJsonObject();
-                    SharedPreferences.Editor prefsEditor = mSharedPreferences.edit();
-                    prefsEditor.putString(Constants.ACCESSTOKEN, rootobj.toString());
-                    prefsEditor.commit();
-                    return true;
+                    return rootobj;
 
                 }else{
                     Log.e("MapDemo", "error 1" + conn.getResponseMessage());
@@ -360,7 +357,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             } catch (Exception e) {
                 Log.e("MapDemo", "error 2" + e.getLocalizedMessage());
             }
-            return false;
+            return null;
         }
 
         private String setupBodyRequest(String username, String password) {
@@ -377,13 +374,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final JsonObject rootobj) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
-                finish();
+            if (rootobj != null) {
+                SharedPreferences.Editor prefsEditor = mSharedPreferences.edit();
+                prefsEditor.putString(Constants.ACCESSTOKEN, rootobj.toString());
+                prefsEditor.commit();
+                String accessToken = rootobj.get("id").getAsString();
+                String userId = rootobj.get("userId").getAsString();
+                new GetUser(userId,accessToken).execute();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -394,6 +395,62 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
+        }
+    }
+
+    private class GetUser extends AsyncTask<Void, Void, JsonObject> {
+
+        private String id, accestoken;
+
+        public GetUser(String id, String accestoken) {
+            this.id = id;
+            this.accestoken = accestoken;
+        }
+
+        @Override
+        protected JsonObject doInBackground(Void... voids) {
+            return postNewParking(id, accestoken);
+        }
+
+        private JsonObject postNewParking(String id, String accestoken) {
+            try {
+                URL url = new URL("https://stingray-id.herokuapp.com/api/Users/"+id+"?access_token="+accestoken);
+                Log.d("Login","url = "+ url.toString());
+                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.connect();
+
+                int HttpResult = conn.getResponseCode();
+                if(HttpResult ==HttpURLConnection.HTTP_OK){
+                    JsonParser jp = new JsonParser();
+                    JsonElement root = jp.parse(new InputStreamReader((InputStream) conn.getContent()));
+                    JsonObject rootobj = root.getAsJsonObject();
+                    return rootobj;
+
+                }else{
+                    Log.e("MapDemo", "error 1" + conn.getResponseMessage());
+                }
+            } catch (Exception e) {
+                Log.e("MapDemo", "error 2" + e.getLocalizedMessage());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(JsonObject user) {
+            super.onPostExecute(user);
+            if (user != null) {
+                SharedPreferences.Editor prefsEditor = mSharedPreferences.edit();
+                prefsEditor.putString(Constants.USERREG, user.toString());
+                prefsEditor.commit();
+
+            }
+
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
         }
     }
 }
