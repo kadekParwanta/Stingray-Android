@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity
             changeFragment(new HomeFragment());
         } else if (id == R.id.nav_yearbook) {
             changeFragment(new YearbookFragment());
+        } else if (id ==  R.id.nav_bookshelve) {
+            changeFragment(new BookshelfFragment());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

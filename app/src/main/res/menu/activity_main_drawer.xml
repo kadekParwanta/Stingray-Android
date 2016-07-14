@@ -10,6 +10,11 @@
             android:id="@+id/nav_yearbook"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Yearbook" />
+
+        <item
+            android:id="@+id/nav_bookshelve"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Bookshelve" />
     </group>
 
 </menu>
