@@ -19,7 +19,7 @@ public class StingrayApplication extends Application {
             // However, some applications will need to talk to more than one
             // server - create as many Adapters as you need.
             adapter = new RestAdapter(
-                    getApplicationContext(), "https://stingray-id.herokuapp.com/api");
+                    getApplicationContext(), Constants.BASE_URL + "/api");
         }
         return adapter;
     }

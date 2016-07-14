@@ -72,7 +72,7 @@ public class CardAdapter extends  RecyclerView.Adapter<CardAdapter
         holder.label.setText("Rp. "+mDataset.get(position).getPrice());
 
         if (holder.avatar != null) {
-            imageLoader.DisplayImage("https://stingray-id.herokuapp.com"+mDataset.get(position).getCoverUrl(), holder.avatar);
+            imageLoader.DisplayImage(Constants.BASE_URL+mDataset.get(position).getCoverUrl(), holder.avatar);
         }
     }
 

@@ -326,7 +326,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected JsonObject doInBackground(Void... params) {
             try {
-                URL url = new URL("https://stingray-id.herokuapp.com/api/Users/login");
+                URL url = new URL(Constants.BASE_URL+"/api/Users/login");
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -409,13 +409,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected JsonObject doInBackground(Void... voids) {
-            return postNewParking(id, accestoken);
+            return getUserDetails(id, accestoken);
         }
 
-        private JsonObject postNewParking(String id, String accestoken) {
+        private JsonObject getUserDetails(String id, String accestoken) {
             try {
-                URL url = new URL("https://stingray-id.herokuapp.com/api/Users/"+id+"?access_token="+accestoken);
-                Log.d("Login", "url = " + url.toString());
+                URL url = new URL(Constants.BASE_URL+"/api/Users/"+id+"?access_token="+accestoken);
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
@@ -431,10 +430,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     return rootobj;
 
                 }else{
-                    Log.e("MapDemo", "error 1" + conn.getResponseMessage());
+                    Log.e("getUserDetails", "error 1" + conn.getResponseMessage());
                 }
             } catch (Exception e) {
-                Log.e("MapDemo", "error 2" + e.getLocalizedMessage());
+                Log.e("getUserDetails", "error 2" + e.getLocalizedMessage());
             }
             return null;
         }
