@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             changeFragment(new HomeFragment());
         } else if (id == R.id.nav_yearbook) {
-            changeFragment(new YearbookFragment());
+            changeFragment(new YearbookStoreFragment());
         } else if (id ==  R.id.nav_bookshelve) {
             changeFragment(new BookshelfFragment());
         }
