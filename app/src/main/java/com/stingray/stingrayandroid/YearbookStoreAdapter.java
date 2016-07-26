@@ -86,7 +86,7 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
                         request.allowScanningByMediaScanner();
                         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                     }
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.epub");
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, data.getId()+".epub");
 
                     enqueue = dm.enqueue(request);
 
