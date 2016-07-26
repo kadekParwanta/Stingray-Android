@@ -1,15 +1,21 @@
 package com.stingray.stingrayandroid;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.etsy.android.grid.util.DynamicHeightImageView;
 import com.stingray.stingrayandroid.Helper.ImageLoader;
 import com.stingray.stingrayandroid.Model.Yearbook;
 import com.stingray.stingrayandroid.View.CustomDynamicHeightImage;
@@ -29,6 +35,9 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
     List<Yearbook> datas;
     private final Random mRandom;
     private final ArrayList<Integer> mBackgroundColors;
+
+    private long enqueue;
+    private DownloadManager dm;
 
     private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
 
@@ -52,21 +61,42 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        final DealHolder holder;
+        final YearbookHolder holder;
+        final Yearbook data = datas.get(position);
 
         if (row == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
             row = inflater.inflate(resource, parent, false);
 
-            holder = new DealHolder();
+            holder = new YearbookHolder();
             holder.image = (CustomDynamicHeightImage)row.findViewById(R.id.image);
             holder.title = (TextView)row.findViewById(R.id.title);
             holder.description = (TextView)row.findViewById(R.id.description);
+            holder.progressBar = (ProgressBar) row.findViewById(R.id.progressBar);
+            holder.button = (Button) row.findViewById(R.id.button);
+            holder.button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dm = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(
+                            Uri.parse(data.getEpubUrl()));
+                    request.setDescription(data.getSchool().getName());
+                    request.setTitle("Downloading yearbook " + data.getSchool().getName() + " year " + data.getYear());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        request.allowScanningByMediaScanner();
+                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                    }
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.epub");
+
+                    enqueue = dm.enqueue(request);
+
+                }
+            });
 
             row.setTag(holder);
         }
         else {
-            holder = (DealHolder) row.getTag();
+            holder = (YearbookHolder) row.getTag();
         }
 
         double positionHeight = getPositionRatio(position);
@@ -75,7 +105,7 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
 
         row.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
 
-        final Yearbook data = datas.get(position);
+
         imageLoader.DisplayImage(Constants.BASE_URL + data.getCoverUrl(), holder.image);
 
         holder.image.setHeightRatio(positionHeight);
@@ -85,10 +115,12 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
         return row;
     }
 
-    static class DealHolder {
+    static class YearbookHolder {
         CustomDynamicHeightImage image;
         TextView title;
         TextView description;
+        ProgressBar progressBar;
+        Button button;
     }
 
     private double getPositionRatio(final int position) {
