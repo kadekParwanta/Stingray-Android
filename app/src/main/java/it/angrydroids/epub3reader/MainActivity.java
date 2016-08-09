@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_book_view);
+		setContentView(R.layout.activity_epub_main);
 
 		navigator = new EpubNavigator(2, this);
 

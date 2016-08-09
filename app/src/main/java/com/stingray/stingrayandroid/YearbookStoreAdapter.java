@@ -78,11 +78,11 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
             holder.description = (TextView)row.findViewById(R.id.description);
             holder.progressBar = (ProgressBar) row.findViewById(R.id.progressBar);
             holder.button = (Button) row.findViewById(R.id.button);
-            Context mContext = getContext();
             holder.button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    File file = new File(Environment.DIRECTORY_DOWNLOADS, data.getId()+".epub");
+                    File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    File file = new File(downloadDir.getAbsolutePath()+"/"+ data.getId()+".epub");
                     if (file.exists()) {
                         Intent intent = new Intent(activity, it.angrydroids.epub3reader.MainActivity.class);
                         intent.putExtra(activity.getString(R.string.bpath),file.getAbsolutePath());
