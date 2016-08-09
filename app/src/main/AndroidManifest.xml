@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +31,7 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name="it.angrydroids.epub3reader.BookMainActivity"
+            android:name="it.angrydroids.epub3reader.MainActivity"
             android:label="Reader"/>
     </application>
 

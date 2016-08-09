@@ -3,6 +3,7 @@ package com.stingray.stingrayandroid;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -20,9 +21,12 @@ import com.stingray.stingrayandroid.Helper.ImageLoader;
 import com.stingray.stingrayandroid.Model.Yearbook;
 import com.stingray.stingrayandroid.View.CustomDynamicHeightImage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import it.angrydroids.epub3reader.*;
 
 /**
  * Created by Kadek_P on 7/15/2016.
@@ -74,21 +78,30 @@ public class YearbookStoreAdapter extends ArrayAdapter<Yearbook> {
             holder.description = (TextView)row.findViewById(R.id.description);
             holder.progressBar = (ProgressBar) row.findViewById(R.id.progressBar);
             holder.button = (Button) row.findViewById(R.id.button);
+            Context mContext = getContext();
             holder.button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dm = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
-                    DownloadManager.Request request = new DownloadManager.Request(
-                            Uri.parse(data.getEpubUrl()));
-                    request.setDescription(data.getSchool().getName());
-                    request.setTitle("Downloading yearbook " + data.getSchool().getName() + " year " + data.getYear());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        request.allowScanningByMediaScanner();
-                        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                    }
-                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, data.getId()+".epub");
+                    File file = new File(Environment.DIRECTORY_DOWNLOADS, data.getId()+".epub");
+                    if (file.exists()) {
+                        Intent intent = new Intent(activity, it.angrydroids.epub3reader.MainActivity.class);
+                        intent.putExtra(activity.getString(R.string.bpath),file.getAbsolutePath());
+                        activity.startActivity(intent);
+                    } else {
+                        dm = (DownloadManager)activity.getSystemService(Context.DOWNLOAD_SERVICE);
+                        DownloadManager.Request request = new DownloadManager.Request(
+                                Uri.parse(Constants.BASE_URL+data.getEpubUrl()));
+                        request.setDescription(data.getSchool().getName());
+                        request.setTitle("Downloading " + data.getSchool().getName() + " year " + data.getYear());
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            request.allowScanningByMediaScanner();
+                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                        }
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, data.getId()+".epub");
 
-                    enqueue = dm.enqueue(request);
+                        enqueue = dm.enqueue(request);
+                    }
+
 
                 }
             });
